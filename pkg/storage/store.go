@@ -21,7 +21,7 @@ type Store struct {
 }
 
 func NewStore(cfg DBConfig) (*Store, error) {
-	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", cfg.Username, cfg.Password, cfg.Host, cfg.Port, cfg.DBName)
+	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", cfg.Username, cfg.Password, cfg.Host, cfg.Port, cfg.DBName)
 
 	db, err := sqlx.Connect("postgres", connStr)
 	if err != nil {

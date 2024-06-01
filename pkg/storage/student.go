@@ -11,10 +11,10 @@ func (s *Store) CreateStudent(name string) (*models.Student, error) {
 			name
 		) VALUES (
 			:name
-		) RETURNING (
+		) RETURNING
 			id,
 			name
-		)
+		;
 	`
 
 	stmt, err := s.db.PrepareNamed(query)
