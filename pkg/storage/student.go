@@ -25,17 +25,17 @@ func (s *Store) CreateStudent(name string) (*models.Student, error) {
 		return nil, err
 	}
 
-	returnedStudent := models.Student{}
+	returnedStudent := &models.Student{}
 	args := map[string]any{
 		"name": name,
 	}
 
-	err = stmt.Get(&returnedStudent, args)
+	err = stmt.Get(returnedStudent, args)
 	if err != nil {
 		return nil, err
 	}
 
-	return &returnedStudent, nil
+	return returnedStudent, nil
 }
 
 func (s *Store) GetStudentByID(id uuid.UUID) (student *models.Student, found bool, err error) {
@@ -51,19 +51,50 @@ func (s *Store) GetStudentByID(id uuid.UUID) (student *models.Student, found boo
 		return nil, false, err
 	}
 
-	returnedStudent := models.Student{}
+	returnedStudent := &models.Student{}
 	args := map[string]any{
 		"id": id,
 	}
 
-	err = stmt.Get(&returnedStudent, args)
+	err = stmt.Get(returnedStudent, args)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, false, nil
+		} else {
+			return nil, false, err
 		}
+	}
 
+	return returnedStudent, true, nil
+}
+
+func (s *Store) UpdateStudent(student *models.Student) (updatedStudent *models.Student, found bool, err error) {
+	query := `
+		UPDATE students
+		SET
+			name = :name
+		WHERE id = :id
+		RETURNING
+			id,
+			name
+		;
+	`
+
+	stmt, err := s.db.PrepareNamed(query)
+	if err != nil {
 		return nil, false, err
 	}
 
-	return &returnedStudent, true, nil
+	updatedStudent = &models.Student{}
+
+	err = stmt.Get(updatedStudent, student)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, false, nil
+		} else {
+			return nil, false, err
+		}
+	}
+
+	return updatedStudent, true, nil
 }
