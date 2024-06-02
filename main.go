@@ -90,4 +90,29 @@ func main() {
 	} else {
 		fmt.Println("Correctly failed to find and update nonexistent student")
 	}
+
+	found, err = store.DeleteStudentByID(updatedStudent.ID)
+	if err != nil {
+		fmt.Println("Error trying to delete student")
+		panic(err)
+	}
+
+	if !found {
+		fmt.Println("Didn't find student when trying to delete")
+		return
+	}
+
+	fmt.Println("Deleted student successfully")
+
+	found, err = store.DeleteStudentByID(uuid.New())
+	if err != nil {
+		fmt.Println("Error trying to delete nonexistent student")
+		panic(err)
+	}
+
+	if found {
+		fmt.Println("Somehow deleted student with random ID")
+	} else {
+		fmt.Println("Correctly failed to find nonexistent student when trying to delete")
+	}
 }

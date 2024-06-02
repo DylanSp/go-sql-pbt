@@ -3,6 +3,7 @@ package storage
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/DylanSp/go-sql-pbt/pkg/models"
 	"github.com/google/uuid"
@@ -97,4 +98,28 @@ func (s *Store) UpdateStudent(student *models.Student) (updatedStudent *models.S
 	}
 
 	return updatedStudent, true, nil
+}
+
+func (s *Store) DeleteStudentByID(id uuid.UUID) (found bool, err error) {
+	query := `
+		DELETE
+		FROM students
+		WHERE id = :id
+	`
+	args := map[string]any{
+		"id": id,
+	}
+
+	result, err := s.db.NamedExec(query, args)
+	if err != nil {
+		return false, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+
+	fmt.Printf("Affected %v rows\n", rowsAffected)
+	return (rowsAffected > 0), nil
 }
