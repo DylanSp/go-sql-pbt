@@ -11,5 +11,9 @@ up:
 down:
     docker compose down
 
+docker-clean:
+    docker compose rm -f db migrate
+    docker volume rm "$(docker volume ls -q)"
+
 test-unit:
     go test {{go_package_name}}/pkg/storage -run TestAllMethodsWithExistingStudent
