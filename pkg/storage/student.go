@@ -1,6 +1,9 @@
 package storage
 
 import (
+	"database/sql"
+	"errors"
+
 	"github.com/DylanSp/go-sql-pbt/pkg/models"
 	"github.com/google/uuid"
 )
@@ -35,7 +38,7 @@ func (s *Store) CreateStudent(name string) (*models.Student, error) {
 	return &returnedStudent, nil
 }
 
-func (s *Store) GetStudentByID(id uuid.UUID) (*models.Student, error) {
+func (s *Store) GetStudentByID(id uuid.UUID) (student *models.Student, found bool, err error) {
 	query := `
 		SELECT id,
 			name
@@ -45,7 +48,7 @@ func (s *Store) GetStudentByID(id uuid.UUID) (*models.Student, error) {
 
 	stmt, err := s.db.PrepareNamed(query)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 
 	returnedStudent := models.Student{}
@@ -55,8 +58,12 @@ func (s *Store) GetStudentByID(id uuid.UUID) (*models.Student, error) {
 
 	err = stmt.Get(&returnedStudent, args)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, false, nil
+		}
+
+		return nil, false, err
 	}
 
-	return &returnedStudent, nil
+	return &returnedStudent, true, nil
 }

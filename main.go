@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/DylanSp/go-sql-pbt/pkg/storage"
+	"github.com/google/uuid"
 )
 
 func main() {
@@ -29,11 +30,30 @@ func main() {
 		panic(err)
 	}
 
-	fetchedStudent, err := store.GetStudentByID(createdStudent.ID)
+	fetchedStudent, found, err := store.GetStudentByID(createdStudent.ID)
 	if err != nil {
 		fmt.Println("Unable to fetch student")
 		panic(err)
 	}
 
-	fmt.Println("Fetched student", fetchedStudent.Name)
+	if found {
+		fmt.Println("Fetched student", fetchedStudent.Name)
+	} else {
+		fmt.Println("Created student doesn't exist")
+		return
+	}
+
+	nonexistentStudent, found, err := store.GetStudentByID(uuid.New())
+	if err != nil {
+		fmt.Println("Error trying to fetch nonexistent student")
+		panic(err)
+	}
+
+	if found {
+		fmt.Println("Somehow fetched student with random ID")
+		fmt.Println("Name:", nonexistentStudent.Name)
+	} else {
+		fmt.Println("Correctly failed to find nonexistent student")
+	}
+
 }
