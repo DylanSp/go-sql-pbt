@@ -24,26 +24,6 @@ func main() {
 		panic(err)
 	}
 
-	studentName := "Alice"
-	createdStudent, err := store.CreateStudent(studentName)
-	if err != nil {
-		fmt.Println("Unable to create student")
-		panic(err)
-	}
-
-	fetchedStudent, found, err := store.GetStudentByID(createdStudent.ID)
-	if err != nil {
-		fmt.Println("Unable to fetch student")
-		panic(err)
-	}
-
-	if !found {
-		fmt.Println("Created student doesn't exist")
-		return
-	}
-
-	fmt.Println("Fetched student", fetchedStudent.Name)
-
 	nonexistentStudent, found, err := store.GetStudentByID(uuid.New())
 	if err != nil {
 		fmt.Println("Error trying to fetch nonexistent student")
@@ -56,24 +36,6 @@ func main() {
 	} else {
 		fmt.Println("Correctly failed to find nonexistent student")
 	}
-
-	studentNameChanged := models.Student{
-		ID:   createdStudent.ID,
-		Name: "Bob",
-	}
-
-	updatedStudent, found, err := store.UpdateStudent(&studentNameChanged)
-	if err != nil {
-		fmt.Println("Error trying to update student")
-		panic(err)
-	}
-
-	if !found {
-		fmt.Println("Didn't find student when trying to update")
-		return
-	}
-
-	fmt.Println("Updated student, new name is", updatedStudent.Name)
 
 	nonexistentStudent, found, err = store.UpdateStudent(&models.Student{
 		ID:   uuid.New(),
@@ -90,19 +52,6 @@ func main() {
 	} else {
 		fmt.Println("Correctly failed to find and update nonexistent student")
 	}
-
-	found, err = store.DeleteStudentByID(updatedStudent.ID)
-	if err != nil {
-		fmt.Println("Error trying to delete student")
-		panic(err)
-	}
-
-	if !found {
-		fmt.Println("Didn't find student when trying to delete")
-		return
-	}
-
-	fmt.Println("Deleted student successfully")
 
 	found, err = store.DeleteStudentByID(uuid.New())
 	if err != nil {
