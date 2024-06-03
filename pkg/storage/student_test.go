@@ -55,4 +55,32 @@ func TestBasicUsage(t *testing.T) {
 		require.NoError(t, err)
 		require.False(t, found)
 	})
+
+	t.Run("Check that storage methods behave correctly when not finding students", func(t *testing.T) {
+		dbCfg := storage.DBConfig{
+			Host:   "localhost",
+			Port:   "5432",
+			DBName: "school",
+
+			Username: "postgres",
+			Password: "devpassword",
+		}
+		store, err := storage.NewStore(dbCfg)
+		require.NoError(t, err)
+
+		_, found, err := store.GetStudentByID(uuid.New())
+		require.NoError(t, err)
+		require.False(t, found)
+
+		nonexistentStudent := &models.Student{
+			ID: uuid.New(),
+		}
+		_, found, err = store.UpdateStudent(nonexistentStudent)
+		require.NoError(t, err)
+		require.False(t, found)
+
+		found, err = store.DeleteStudentByID(uuid.New())
+		require.NoError(t, err)
+		require.False(t, found)
+	})
 }
