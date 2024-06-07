@@ -113,6 +113,7 @@ func FuzzBasicUsage(f *testing.F) {
 	}
 
 	// TODO - use f.Add() to seed corpus?
+	f.Add(int64(48))
 
 	fuzzTarget := createFuzzTarget(store)
 	f.Fuzz(fuzzTarget)
