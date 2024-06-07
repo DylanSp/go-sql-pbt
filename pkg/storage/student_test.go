@@ -119,13 +119,16 @@ func FuzzBasicUsage(f *testing.F) {
 	f.Fuzz(fuzzTarget)
 }
 
+const MaxOperations = 10
+
 // use a higher-order function so we don't have to recreate the store on every iteration
 func createFuzzTarget(store *storage.Store) func(*testing.T, int64) {
 	return func(t *testing.T, seed int64) {
 		rng := rand.New(rand.NewSource(seed))
 
 		// generate sequence of operations
-		numOperations := rng.Int()
+
+		numOperations := 1 + rng.Intn(MaxOperations) // limit the number of operations in any single run;
 		operations := []SQLOpType{}
 		for i := 0; i < numOperations; i++ {
 			opType := randChoice(rng, []SQLOpType{SelectOp, InsertOp, UpdateOp, DeleteOp})
