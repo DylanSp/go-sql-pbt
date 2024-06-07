@@ -112,9 +112,6 @@ func FuzzBasicUsage(f *testing.F) {
 		f.Fatal("couldn't initialize database connection: ", err)
 	}
 
-	// TODO - use f.Add() to seed corpus?
-	f.Add(int64(48))
-
 	fuzzTarget := createFuzzTarget(store)
 	f.Fuzz(fuzzTarget)
 }
@@ -160,8 +157,13 @@ func createFuzzTarget(store *storage.Store) func(*testing.T, int64) {
 				}
 
 				// result from database
-				nameFromDB, foundInDB, err := store.GetStudentByID(id)
+				studentFromDB, foundInDB, err := store.GetStudentByID(id)
 				assert.NoError(t, err)
+
+				var nameFromDB string
+				if studentFromDB != nil {
+					nameFromDB = studentFromDB.Name
+				}
 
 				// result from test oracle
 				nameFromOracle, foundInOracle := oracle[id]
@@ -208,8 +210,10 @@ func createFuzzTarget(store *storage.Store) func(*testing.T, int64) {
 				_, foundInOracle := oracle[id]
 				assert.EqualValues(t, foundInOracle, foundInDB)
 
-				// update value in test oracle to keep it in sync
-				oracle[id] = newName
+				// *only if student existed*, update the value in test oracle to keep it in sync
+				if foundInOracle {
+					oracle[id] = newName
+				}
 
 			case DeleteOp:
 				// randomly choose whether to update an existing record or to update a nonexistent record
