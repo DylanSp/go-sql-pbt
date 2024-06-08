@@ -8,7 +8,7 @@ I'd also like to explore some techniques for easily and quickly running isolated
 
 ## Fuzz testing
 
-The fuzz test in `pkg/storage/student_test.go` creates a random sequence of `SELECT`, `INSERT`, `UPDATE`, and `DELETE` operations. The test then executes these with random parameters, calling the data access methods defined in `pkg/storage/student.go`. As well as performing these operations against a Postgres database (running in a Docker container), the fuzz test performs equivalent operations against a `map` and verifies that the database has the same data; the `map` is used as a [test oracle](https://en.wikipedia.org/wiki/Test_oracle).
+The fuzz test in [`pkg/storage/student_test.go`](/pkg/storage/student_test.go#L122) creates a random sequence of `SELECT`, `INSERT`, `UPDATE`, and `DELETE` operations. The test then executes these with random parameters, calling the data access methods defined in [`pkg/storage/student.go`](/pkg/storage/student.go). As well as performing these operations against a Postgres database (running in a Docker container), the fuzz test performs equivalent operations against a `map` and verifies that the database has the same data; the `map` is used as a [test oracle](https://en.wikipedia.org/wiki/Test_oracle).
 
 To see the effectiveness of fuzz testing, we can intentionally introduce a bug that the fuzz test catches, while the unit tests don't. The `GetStudentByID` method has an erroneous query commented-out; instead of the correct query, the erroneous query simply returns the student with the lowest-sorted ID. If we comment out the correct query and uncomment the erroneous query, the unit tests still pass, because they only test a single record at a time. However, running the fuzz test catches the bug almost immediately.
 
