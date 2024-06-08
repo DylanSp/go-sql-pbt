@@ -40,20 +40,20 @@ func (s *Store) CreateStudent(name string) (*models.Student, error) {
 }
 
 func (s *Store) GetStudentByID(id uuid.UUID) (student *models.Student, found bool, err error) {
-	// query := `
-	// 	SELECT id,
-	// 		name
-	// 	FROM students
-	// 	WHERE id = :id
-	// `
-
 	query := `
 		SELECT id,
 			name
 		FROM students
-		ORDER BY id ASC
-		LIMIT 1
+		WHERE id = :id
 	`
+
+	// query := `
+	// 	SELECT id,
+	// 		name
+	// 	FROM students
+	// 	ORDER BY id ASC
+	// 	LIMIT 1
+	// `
 
 	stmt, err := s.db.PrepareNamed(query)
 	if err != nil {
