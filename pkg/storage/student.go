@@ -3,7 +3,6 @@ package storage
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 
 	"github.com/DylanSp/go-sql-pbt/pkg/models"
 	"github.com/google/uuid"
@@ -128,6 +127,5 @@ func (s *Store) DeleteStudentByID(id uuid.UUID) (found bool, err error) {
 		return false, err
 	}
 
-	fmt.Printf("Affected %v rows\n", rowsAffected)
 	return (rowsAffected > 0), nil
 }
