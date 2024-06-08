@@ -15,6 +15,9 @@ docker-clean:
     docker compose rm -f db migrate
     docker volume rm "$(docker volume ls -q)"
 
+psql:
+    docker exec -it go-sql-pbt-db-1 sh -c "psql -U postgres -d school"
+
 # run tests with -count=1 to avoid caching
 [doc]
 test-unit:
